@@ -3,6 +3,9 @@ using GeekShopping.CartAPI.Data.ValueObjects;
 using GeekShopping.CartAPI.Model;
 using GeekShopping.CartAPI.Model.Context;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GeekShopping.CartAPI.Repository
 {
@@ -16,6 +19,7 @@ namespace GeekShopping.CartAPI.Repository
             _context = context;
             _mapper = mapper;
         }
+
         public async Task<bool> ApplyCoupon(string userId, string couponCode)
         {
             throw new NotImplementedException();
@@ -42,13 +46,11 @@ namespace GeekShopping.CartAPI.Repository
             Cart cart = new()
             {
                 CartHeader = await _context.CartHeaders
-                    .FirstOrDefaultAsync(x => x.UserId == userId)
+                    .FirstOrDefaultAsync(c => c.UserId == userId),
             };
-
             cart.CartDetails = _context.CartDetails
                 .Where(c => c.CartHeaderId == cart.CartHeader.Id)
                     .Include(c => c.Product);
-
             return _mapper.Map<CartVO>(cart);
         }
 
